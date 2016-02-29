@@ -12,7 +12,7 @@
 // defined('ABSPATH') or die("No script kiddies please!");
 define('SLIDE_OVA_DIR', dirname(__FILE__));
 define('SLIDE_OVA_URL', WP_PLUGIN_URL . "/" . basename(SLIDE_OVA_DIR));
-define('SLIDE_OVA_VERSION', '1.3');
+define('SLIDE_OVA_VERSION', '2.0');
 
 function slide_ova_get_meta($field) {
   global $post;
@@ -42,15 +42,15 @@ function slide_ova_activate() {
 function slide_ova_register() {
   $labels = array(
     'name' => __('Slide Ova'),
-    'singular_name' => __('Slide Ova'),
-    'add_new' => __('Add Slide'),
-    'add_new_item' => __('Add New Slide'),
-    'edit_item' => __('Edit Slide'),
-    'new_item' => __('New Slide'),
-    'view_item' => __('View Slide'),
-    'search_items' => __('Search for slide'),
-    'not_found' => __('No Slide found'),
-    'not_found_in_trash' => __('No Slide found in Trash'),
+    'singular_name' => __('Gallery'),
+    'add_new' => __('Add Gallery'),
+    'add_new_item' => __('Add New Gallery'),
+    'edit_item' => __('Edit Gallery'),
+    'new_item' => __('New Gallery'),
+    'view_item' => __('View Gallery'),
+    'search_items' => __('Search for Gallery'),
+    'not_found' => __('No Gallery found'),
+    'not_found_in_trash' => __('No Gallery found in Trash'),
     'parent_item_colon' => '',
     'menu_name' => __('Slide Ova')
   );
@@ -61,6 +61,7 @@ function slide_ova_register() {
     'capability_type' => 'post',
     'hierarchical' => true,
     'rewrite' => array('slug' => 'slide-ova'),
+    'taxonomies' => array('post_tag'),
     'supports' => array(
         'title',
         'thumbnail',
@@ -69,7 +70,7 @@ function slide_ova_register() {
         'revisions'
     ),
     'menu_position'       => 20,
-    'menu_icon' => SLIDE_OVA_URL . '/images/icon.png',
+    'menu_icon' => 'dashicons-format-gallery',
   );
 
   register_post_type( 'slide-ova', $args );
@@ -80,7 +81,6 @@ function place_slide_ova_in_menu($safe_text, $text) {
   if (__('Slide Ova', 'slide_ova_context') !== $text) {
     return $safe_text;
   }
-
   // We are on the main menu item now. The filter is not needed anymore.
   remove_filter('attribute_escape', 'place_slide_ova_in_menu');
 
@@ -92,7 +92,7 @@ function slide_ova_enqueue_scripts() {
   if (!is_admin()) {
 
     wp_enqueue_script('jquery');
-    wp_register_script( 'slide_ova_scripts', SLIDE_OVA_URL . '/js/slide-ova.js',__FILE__ );
+    wp_register_script('slide_ova_scripts', SLIDE_OVA_URL . '/js/slide-ova.js',__FILE__);
     wp_enqueue_script('slide_ova_scripts');
 
   }
@@ -105,7 +105,11 @@ function slide_ova_enqueue_styles() {
 }
 add_action('wp_enqueue_scripts', 'slide_ova_enqueue_styles');
 
-// show content
-include("admin/slide-ova-listing.php");
+
+// Load in the pages doing everything else!
+
 include("admin/slide-ova-admin.php");
-include("includes/slide-ova-content.php");
+
+include("includes/slide-ova-galleries.php");
+// include("includes/slide-ova-gallery.php");
+// include("includes/slide-ova-carousel.php");
