@@ -1,5 +1,5 @@
 // blank
-console.log('Here I am!');
+'use strict';
 jQuery(document).ready(function($) {
   function show_slide(myPostID) {
     jQuery.post(
@@ -54,9 +54,14 @@ jQuery(document).ready(function($) {
     var $this = $(this)
       , slide_ID = $this.attr('id')
       , slide_ID = slide_ID.replace('slide-', '')
+      , slide_URL = $this.find('img').attr('src')
+      , $slide = $this.closest('.slide-container').find('.slide-image')
       ;
     $this.find('img').addClass('active');
     $this.siblings().find('img').removeClass('active');
-    show_slide(slide_ID);
+    // console.log($slide);
+    // $slide.html('Hello');
+    $slide.html('<img src="' + slide_URL + '" class="img-responsive" />');
+    //show_slide(slide_ID);
   });
 });

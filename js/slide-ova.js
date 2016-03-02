@@ -1,3 +1,4 @@
+'use strict';
 jQuery(document).ready(function($) {
   // AJAX Begin //
   // function show_slide(myPostID) {
@@ -83,7 +84,7 @@ jQuery(document).ready(function($) {
 
   // for every eight add one dot and number them appropriately
   for(var i = 0; i < total_galleries; i+=8) {
-    var n =  i / 8
+    var n = i / 8
       , s = n + 1
       ;
     $galleries_set_selectors.append('<li class="set" data-target="' + n + '">' + s + '</li>');
@@ -104,35 +105,61 @@ jQuery(document).ready(function($) {
     ////////////////////////////////////////////////////////////////////////////
    //                                                  Modal Gallery Rotator //
   ////////////////////////////////////////////////////////////////////////////
-
-  var $slides_container     = $('.modal .slide-container')
-    , $slides_wrapper       = $('.slides-wrapper')
-    , $slides_holder        = $('.slides-holder')
-    , $slide_preview        = $('.slide-preview')
-    , $slides_set_selector  = $('.slides-set-selector')
-    , total_slides          = $slide_preview.length
-    , slide_preview_width   = $slide_preview.outerWidth(true)
-    , slides_set_width      = slide_preview_width * 3
-    , slides_holder_width   = 0
-    ;
-
-  // set the width of the slides wrapper
-  $slide_preview.each(function() {
-     slides_holder_width += slide_preview_width;
-  });
-  $('.slides-holder').width(slides_holder_width);
-
-  // for set the selector width
-  for(var i = 0; i < total_slides; i+=6) {
-    var n =  i / 6
-      , s = n + 1
-      , w = (slides_holder_width / s)
+  $('.modal').on('shown.bs.modal', function() {
+    var $slides_container     = $('.modal.in .slide-container')
+      , $slides_wrapper       = $('.modal.in .slides-wrapper')
+      , $slides_holder        = $('.modal.in .slides-holder')
+      , $slide_preview        = $('.modal.in .slide-preview')
+      , $slides_set_bar       = $('.modal.in .slides-set-bar')
+      , total_slides          = $slide_preview.length
+      , slide_preview_width   = $slide_preview.outerWidth(true)
+      , slides_wrapper_width  = $slides_wrapper.outerWidth()
+      , slides_set_width      = slide_preview_width * 3
+      , slides_holder_width   = 0
+      , curDown = false
+      , curYPos = 0
+      , curXPos = 0
       ;
 
-    $slides_set_selector.append( s ).width(w);
-  }
-  // click and drag
-  // $slides_set_selector.on('mousedown' function(){
+      ///////////////////////
+     // Create the Slider //
+    ///////////////////////
+    $slide_preview.each(function() {
+       slides_holder_width += slide_preview_width;
+    });
+    $slides_holder.width(slides_holder_width);
 
-  // });
+    for(var i = 0; i < total_slides; i+=6) {
+      var n =  i / 6
+        , s = n + 1
+        , w = (slides_wrapper_width / s)
+        ;
+
+      // $slides_set_selector.append( s ).width(w);
+      // $slides_set_selector.width(w);
+      $slides_set_bar.append('<li class="set" data-target="' + n + '">' + s + '</li>');
+      $('.modal.in .set').width(w);
+    }
+    // set the active default
+    $('.modal.in .set:nth-child(1)').addClass('active');
+    // animate on click
+    $('.modal.in .set').click( function(){
+      var $this = $(this)
+        , slides_set_number = $this.attr('data-target')
+        ;
+      // go right
+      $slides_holder.clearQueue().animate({
+        left: (slide_preview_width * slides_set_number) * -1
+      });
+      // make what was clicked active and reset the others
+      $this.addClass('active').siblings().removeClass('active');
+    });
+
+      /////////////////////////
+     // Click Scroll Slider //
+    /////////////////////////
+
+    
+    
+  });
 });

@@ -40,77 +40,90 @@ add_action( 'wp_ajax_nopriv_the_ajax_hook', 'showSlide' );
 // THE AJAX END //
 
 function slideOva() {
-  echo '[slide-ova tags="tagname" gallyer_id="ID#"]'
+  echo slide_ova_shortcode();
 }
 
 // Create The Shortcode [slide-ova] to be used in posts
 add_shortcode( 'slide-ova', 'slide_ova_shortcode' );
 
 function slide_ova_shortcode( $atts ) {
-  // create short code attributes [slide-ova tags="tagname" gallyer_id="ID#"]
-  $a =  shortcode_atts( array('tags' => '', 'gallery_id' => ''), $atts );
+  $a =  shortcode_atts( array('tags' => ''), $atts );
   $tags = $a['tags'];
-  $galleryID = $a['gallery_id'];
   global $wpdb; // to access the database
   global $post;
 
 
-  $args = array( 'post_type'=>'slide-ova', 'posts_per_page'=>'-1', 'orderby'=>'menu_order', 'order'=>'ASC', 'tag' => $tags, 'post__in' => array($galleryID) );
+  $args = array( 'post_type'=>'slide-ova', 'posts_per_page'=>'-1', 'orderby'=>'menu_order', 'order'=>'ASC', 'tag' => $tags, );
   $galleries = get_posts( $args );
   // $tags = get_tags( array('name_like' => "a", 'order' => 'ASC') );
   $post_title = '';
   $post_content = '';
   $slide_url = '';
+  $slide_ova = '';
 
   // get gallery data for each post
   foreach ( $galleries as $post ) {
-    $slide_url = slide_ova_get_meta("slide-ova-url");
+    // $slide_url = slide_ova_get_meta("slide-ova-url");
 
-    $gallery_modal = "";
-    $gallery_modal .= '<div class="modal fade slide-ova-modal-' . $post->ID . ' gallery-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">';
-      $gallery_modal .= '<div class="modal-dialog modal-lg">';
-        $gallery_modal .= '<div class="modal-content text-center">';
+    $slide_ova .= '<div class="modal fade slide-ova-modal-' . $post->ID . ' gallery-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">';
+      $slide_ova .= '<div class="modal-dialog modal-lg">';
+        $slide_ova .= '<div class="modal-content text-center">';
+          $slide_ova .= '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
 
-          // $images_args = array(
-          //   'post_type'      => 'attachment',
-          //   'post_mime_type' => 'image',
-          //   'post_status'    => 'inherit',
-          //   'posts_per_page' => - 1,
-          // );
-          // $images = new WP_Query( $images_args );
+          $slide_ova .= '<div id="slide-ova-modal-' . $post->ID . '" class="slide-container">';
 
-          // Retrieve the first gallery in the post
-          $gallery = get_post_gallery_images( $post );
+            $slide_ova .= '<div class="slide slide-image"></div>';
 
-          $gallery_modal .= '<div id="slide-ova-modal-' . $post->ID . '-' . $post->ID . '" class="slide-container">';
+            $slide_ova .= '<div class="slides-wrapper">';
+              $slide_ova .= '<div class="slides-holder">';
 
-            $gallery_modal .= '<div class="slide slide-image"></div>';
+                $slide_count = 0;
 
-            $gallery_modal .= '<div class="slides-wrapper">';
-              $gallery_modal .= '<div class="slides-holder">';
+                $gallery = get_post_gallery( get_the_ID(), false );
+                $ids = explode( ",", $gallery['ids'] );
+                foreach( $ids as $id ) {
+                  $image_attributes = wp_get_attachment_image_src( $id, 'full' ); // returns an array
+                  if( $image_attributes ) {
+                    $slide_count++;
 
-                // Loop through each image in each gallery
-                foreach( $gallery as $image ) {
-                  $gallery_modal .= '<a href="#" class="slide-preview" id="slide-' . $post->ID . '-' . '">';
-                    $gallery_modal .= '<img src="' . $image . '" width="122" height="122" />';
-                  $gallery_modal .= '</a>';
+                    if ($slide_count == 1) {
+                      $slide_ova .= '<div class="slides-col">';
+                    } elseif ($slide_count % 7 == 0) {
+                      $slide_ova .= '</div><div class="slides-col">';
+                    }
+
+                    $slide_ova .= '<a href="#" class="slide-preview" id="slide-' . $id . '">';
+                      $slide_ova .= '<img src="' . $image_attributes[0] . '" width="122" height="122" />';
+                    $slide_ova .= '</a>';
+                  }
                 }
+                $slide_ova .= '</div>';
+
+                // Retrieve the first gallery in the post
+                // $gallery = get_post_gallery_images( $post );
+
+                // // Loop through each image in each gallery
+                // foreach( $gallery as $image ) {
+                //   $slide_ova .= '<a href="#" class="slide-preview" id="slide-' . $post->ID . '">';
+                //     $slide_ova .= '<img src="' . $image . '" width="122" height="122" />';
+                //   $slide_ova .= '</a>';
+                // }
 
               // bread crumbs
-              $gallery_modal .= '</div>';
-              $gallery_modal .= '<div class="slides-set-bar"><div class="slides-set-selector"></div></div>';
-            $gallery_modal .= '</div>';
+              $slide_ova .= '</div>';
+              $slide_ova .= '<ul class="slides-set-bar"></ul>';
+            $slide_ova .= '</div>';
 
-          $gallery_modal .= '</div>';
+          $slide_ova .= '</div>';
 
 
-        $gallery_modal .= '</div>';
-      $gallery_modal .= '</div>';
-    $gallery_modal .= '</div>';
+        $slide_ova .= '</div>';
+      $slide_ova .= '</div>';
+    $slide_ova .= '</div>';
   }
 
   // build the content
-  $slide_ova = $gallery_modal;
+  // $slide_ova = $gallery_modal;
 
 
   // build the content
@@ -120,10 +133,10 @@ function slide_ova_shortcode( $atts ) {
     // Gallery slider
       $slide_ova .= '<div class="galleries-wrapper">';
         $slide_ova .= '<div class="galleries-holder">';
-          $slide_count = 0;
+          $gallery_count = 0;
 
           foreach ( $galleries as $post ) {
-            $slide_count++;
+            $gallery_count++;
 
             if (strlen($post->post_title) > 40) {
               $this_gallery_title = substr( $post->post_title, 0, 40 ) . '...';
@@ -138,10 +151,10 @@ function slide_ova_shortcode( $atts ) {
               // nothing
             }
 
-            if ($slide_count == 1) {
-              $slide_ova .= '<div class="gallery-col">';
-            } elseif ($slide_count % 9 == 0) {
-              $slide_ova .= '</div><div class="gallery-col">';
+            if ($gallery_count == 1) {
+              $slide_ova .= '<div class="galleries-col">';
+            } elseif ($gallery_count % 9 == 0) {
+              $slide_ova .= '</div><div class="galleries-col">';
             }
             $slide_ova .= '<a href="#" class="gallery-preview" id="gallery-' . $post->ID . '"  data-toggle="modal" data-target=".slide-ova-modal-' . $post->ID . '">';
               $slide_ova .= '<img src="' . $this_gallery_preview . '" class="gallery_preview_image" width="225" height="225" />';
