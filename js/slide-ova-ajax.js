@@ -39,7 +39,7 @@ jQuery(document).ready(function($) {
         //   }
         // }
         // populate content
-        jQuery(".slide").html(slide);
+        jQuery(".slide-ova-slide").html(slide);
         jQuery(".slide-desc h2").html(data.title);
         jQuery(".slide-desc p").html(data.content);
       }
@@ -54,8 +54,8 @@ jQuery(document).ready(function($) {
     var $this = $(this)
       , slide_ID = $this.attr('id')
       , slide_ID = slide_ID.replace('slide-', '')
-      , slide_URL = $this.find('img').attr('src')
-      , $slide = $this.closest('.slide-container').find('.slide-image')
+      , slide_URL = $this.find('img').attr('src').replace('-150x150', '')
+      , $slide = $this.closest('.slide-container').find('.slide-ova-slide')
       ;
     $this.find('img').addClass('active');
     $this.siblings().find('img').removeClass('active');

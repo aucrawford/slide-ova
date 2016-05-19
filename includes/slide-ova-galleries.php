@@ -65,14 +65,17 @@ function slide_ova_shortcode( $atts ) {
   foreach ( $galleries as $post ) {
     // $slide_url = slide_ova_get_meta("slide-ova-url");
 
-    $slide_ova .= '<div class="modal fade slide-ova-modal-' . $post->ID . ' gallery-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">';
+    $slide_ova .= '<div class="modal fade slide-ova-gallery-modal slide-ova-modal-' . $post->ID . '" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">';
       $slide_ova .= '<div class="modal-dialog modal-lg">';
         $slide_ova .= '<div class="modal-content text-center">';
-          $slide_ova .= '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+          $slide_ova .= '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
 
           $slide_ova .= '<div id="slide-ova-modal-' . $post->ID . '" class="slide-container">';
-
-            $slide_ova .= '<div class="slide slide-image"></div>';
+          
+            // $slide_arg = array( 'post_mime_type' => 'image', 'numberposts' => 1, 'post_parent' => $post->ID, 'post_type' => 'attachment' );
+            // $first_slide = get_children( $slide_arg );
+            $first_slide = get_post_gallery_images($post->ID, 'full')[0];
+            $slide_ova .= '<div class="slide-ova-slide"><img src="' . str_replace('-150x150','',$first_slide) . '" /></div>';
 
             $slide_ova .= '<div class="slides-wrapper">';
               $slide_ova .= '<div class="slides-holder">';
@@ -82,7 +85,7 @@ function slide_ova_shortcode( $atts ) {
                 $gallery = get_post_gallery( get_the_ID(), false );
                 $ids = explode( ",", $gallery['ids'] );
                 foreach( $ids as $id ) {
-                  $image_attributes = wp_get_attachment_image_src( $id, 'full' ); // returns an array
+                  $image_attributes = wp_get_attachment_image_src( $id ); // returns an array
                   if( $image_attributes ) {
                     $slide_count++;
 
@@ -165,7 +168,7 @@ function slide_ova_shortcode( $atts ) {
 
         // bread crumbs
         $slide_ova .= '</div>';
-        $slide_ova .= '<ul class="galleries-set-selectors"></ul>';
+        $slide_ova .= '<ul class="slide-ova-gallery-selectors"></ul>';
       $slide_ova .= '</div>';
 
     // $slide_ova .= '</div>';

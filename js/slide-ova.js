@@ -61,7 +61,7 @@ jQuery(document).ready(function($) {
     , $galleries_wrapper       = $galleries_container.find('.galleries-wrapper')
     , $galleries_holder        = $galleries_container.find('.galleries-holder')
     , $gallery_preview         = $galleries_container.find('.galleries-holder .gallery-preview')
-    , $galleries_set_selectors = $galleries_container.find('.galleries-set-selectors')
+    , $galleries_set_selectors = $galleries_container.find('.slide-ova-gallery-selectors')
     , total_galleries          = $gallery_preview.length
     , gallery_preview_width    = $gallery_preview.outerWidth(true)
     , galleries_set_width      = gallery_preview_width * 4
